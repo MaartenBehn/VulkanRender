@@ -7,6 +7,23 @@
             "label": "makeProject",
             "type": "shell",
             "command": "make"
-        }
+        },
+        {
+            "label": "makeClean",
+            "type": "shell",
+            "command": "make clean"
+        },
+        {
+            "label": "compleShaders",
+            "type": "shell",
+            "command": "sh shaders/compile.sh"
+        },
+        {
+            "label": "preLaunch",
+            "dependsOn": [
+                "compleShaders",
+                "makeProject"
+            ]
+        },
     ]
 }
