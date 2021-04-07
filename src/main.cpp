@@ -1,4 +1,3 @@
-#include "helloTringle.hpp"
 #include "gui/glfw/window.hpp"
 #include "gui/vulkan/vulkan.hpp"
 

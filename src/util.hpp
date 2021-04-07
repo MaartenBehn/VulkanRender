@@ -1,6 +1,15 @@
 #pragma onnce
 
+#include <algorithm>  // Necessary for std::min/std::max
+#include <cstdint>    // Necessary for UINT32_MAX
+#include <cstdlib>
+#include <cstring>
 #include <fstream>
+#include <glm/glm.hpp>
+#include <iostream>
+#include <optional>
+#include <set>
+#include <stdexcept>
 #include <vector>
 
 #define RESET "\033[0m"
