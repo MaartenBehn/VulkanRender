@@ -39,8 +39,8 @@ class HelloTriangleApplication {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
         window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-        //glfwSetWindowUserPointer(window, this);
-        //glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
     }
     static void framebufferResizeCallback(GLFWwindow *window, int width, int height) {
         auto app = reinterpret_cast<HelloTriangleApplication *>(glfwGetWindowUserPointer(window));
@@ -937,8 +937,8 @@ class HelloTriangleApplication {
 
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-            //recreateSwapChain();
-            //return;
+            recreateSwapChain();
+            return;
         } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
             throw std::runtime_error("failed to acquire swap chain image!");
         }
@@ -986,10 +986,9 @@ class HelloTriangleApplication {
         presentInfo.pResults = nullptr;  // Optional
 
         result = vkQueuePresentKHR(presentQueue, &presentInfo);
-
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
             framebufferResized = false;
-            //recreateSwapChain();
+            recreateSwapChain();
         } else if (result != VK_SUCCESS) {
             throw std::runtime_error("failed to present swap chain image!");
         }
