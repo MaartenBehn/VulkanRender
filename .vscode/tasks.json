@@ -16,7 +16,7 @@
         {
             "label": "compleShaders",
             "type": "shell",
-            "command": "sh shaders/compile.sh"
+            "command": "sh src/gui/shaders/compile.sh"
         },
         {
             "label": "preLaunch",

@@ -13,8 +13,7 @@ class Window {
 
     Window();
     ~Window();
-
-   private:
-    static void resizeCallback(GLFWwindow *window, int width, int height);
+    bool shouldClose();
+    void performEvents();
 };
 }  // namespace game
