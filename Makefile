@@ -7,15 +7,16 @@ OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 INC_DIRS := $(shell find $(SRC_DIR) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-CPPFLAGS = -std=c++17 -O0 $(INC_FLAGS)
+CPPFLAGS = -std=c++17  $(INC_FLAGS)
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXrandr -lXi
 
-debug: CPPFLAGS += -g -DDEBUG
+debug: CPPFLAGS += -O0 -g -DDEBUG
 debug: clean VulkanTest
 
 VulkanTest:
 	g++ $(CPPFLAGS) -o VulkanTest $(SRC_FILES) $(LDFLAGS)
 
+run: CPPFLAGS += -Ofast
 run: clean VulkanTest
 	./VulkanTest
 
