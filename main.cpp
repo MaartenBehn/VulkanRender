@@ -14,6 +14,12 @@
 #include <stdexcept>
 #include <vector>
 
+#ifdef DEBUG
+const bool enableValidationLayers = true;
+#else
+const bool enableValidationLayers = false;
+#endif
+
 class HelloTriangleApplication {
    public:
     void run() {
@@ -188,13 +194,8 @@ class HelloTriangleApplication {
         return found;
     }
 
-    const std::vector<const char *> validationLayers = {
-        "VK_LAYER_KHRONOS_validation"};
-#ifdef NDEBUG
-    const bool enableValidationLayers = false;
-#else
-    const bool enableValidationLayers = true;
-#endif
+    const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+
     bool checkValidationLayerSupport() {
         uint32_t layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -983,7 +984,6 @@ class HelloTriangleApplication {
         presentInfo.pImageIndices = &imageIndex;
 
         presentInfo.pResults = nullptr;  // Optional
-        vkQueuePresentKHR(presentQueue, &presentInfo);
 
         result = vkQueuePresentKHR(presentQueue, &presentInfo);
 
@@ -993,6 +993,8 @@ class HelloTriangleApplication {
         } else if (result != VK_SUCCESS) {
             throw std::runtime_error("failed to present swap chain image!");
         }
+
+        vkQueueWaitIdle(presentQueue);
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
