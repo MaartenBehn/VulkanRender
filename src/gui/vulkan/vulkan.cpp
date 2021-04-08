@@ -7,6 +7,8 @@
 #include "swapChain.hpp"
 #include "renderpass.hpp"
 #include "pipline.hpp"
+#include "vertexBuffers.hpp"
+#include "commandBuffers.hpp"
 #include "sync.hpp"
 
 namespace game {
