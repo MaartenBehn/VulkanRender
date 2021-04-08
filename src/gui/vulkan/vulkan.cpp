@@ -9,7 +9,7 @@
 #include "swapChain.hpp"
 #include "renderpass.hpp"
 #include "descriptor.hpp"
-#include "pipline.hpp"
+#include "pipeline.hpp"
 #include "vertexBuffers.hpp"
 #include "indexBuffer.hpp"
 #include "commandBuffers.hpp"
@@ -24,6 +24,7 @@ void initVulkan() {
     setupDebugMessenger();
 
     createSurface();
+
     pickPhysicalDevice();
     createLogicalDevice();
 

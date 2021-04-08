@@ -42,10 +42,37 @@ void pickPhysicalDevice() {
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
+    int bestScore = 0;
     for (const auto &device : devices) {
-        if (isDeviceSuitable(device)) {
+        if (!isDeviceSuitable(device)) {
+            continue;
+        }
+        int score = 0;
+
+        VkPhysicalDeviceProperties props{};
+        vkGetPhysicalDeviceProperties(device, &props);
+        if (props.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+            score += 2000;
+        }
+
+        // Determine the available device local memory.
+        VkPhysicalDeviceMemoryProperties memoryProps{};
+        vkGetPhysicalDeviceMemoryProperties(device, &memoryProps);
+
+        auto heapsPointer = memoryProps.memoryHeaps;
+        auto heaps = std::vector<VkMemoryHeap>(heapsPointer, heapsPointer + memoryProps.memoryHeapCount);
+
+        for (const auto &heap : heaps) {
+            if (heap.flags & VkMemoryHeapFlagBits::VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
+                // Device local heap, should be size of total GPU VRAM.
+                //heap.size will be the size of VRAM in bytes. (bigger is better)
+                score += heap.size / 1000000; // byte / MB -> 1000 per GB
+            }
+        }
+
+        if (score > bestScore) {
+            bestScore = score;
             physicalDevice = device;
-            break;
         }
     }
 

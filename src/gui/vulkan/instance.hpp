@@ -83,11 +83,6 @@ void createInstance() {
         createInfo.enabledLayerCount = 0;
     }
 
-    // Creating instance
-    if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create instance!");
-    }
-
     // Debug Messager
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
     if (enableValidationLayers) {
@@ -102,6 +97,7 @@ void createInstance() {
         createInfo.pNext = nullptr;
     }
 
+    // Create Instance
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
         throw std::runtime_error("failed to create instance!");
     }
