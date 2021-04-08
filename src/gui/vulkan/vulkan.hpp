@@ -3,6 +3,7 @@
 #include "../../util.hpp"
 #include "../glfw/window.hpp"
 #include "../gui.hpp"
+#include <glm/glm.hpp>
 
 namespace game {
 class Vulkan {

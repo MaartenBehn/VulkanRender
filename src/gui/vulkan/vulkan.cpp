@@ -1,13 +1,17 @@
 #include "vulkan.hpp"
 #include "vulkanGlobal.hpp"
+
+
 #include "instance.hpp"
 #include "validation.hpp"
 #include "surface.hpp"
 #include "device.hpp"
 #include "swapChain.hpp"
 #include "renderpass.hpp"
+//#include "descriptor.hpp"
 #include "pipline.hpp"
 #include "vertexBuffers.hpp"
+#include "indexBuffer.hpp"
 #include "commandBuffers.hpp"
 #include "sync.hpp"
 
@@ -24,10 +28,12 @@ void initVulkan() {
     createSwapChain();
     createImageViews();
     createRenderPass();
+    //createDescriptorSetLayout();
     createGraphicsPipeline();
     createFramebuffers();
     createCommandPool();
     createVertexBuffer();
+    createIndexBuffer();
     createCommandBuffers();
     createSyncObjects();
 }
@@ -71,6 +77,11 @@ void recreateSwapChain() {
 
 void cleanup() {
     cleanupSwapChain();
+
+    //vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+
+    vkDestroyBuffer(device, indexBuffer, nullptr);
+    vkFreeMemory(device, indexBufferMemory, nullptr);
 
     vkDestroyBuffer(device, vertexBuffer, nullptr);
     vkFreeMemory(device, vertexBufferMemory, nullptr);

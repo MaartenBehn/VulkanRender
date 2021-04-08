@@ -1,5 +1,3 @@
-#include "vulkan.hpp"
-
 namespace game
 {
 bool checkValidationLayerSupport() {

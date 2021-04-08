@@ -26,14 +26,15 @@ std::chrono::system_clock::time_point a = std::chrono::system_clock::now();
 std::chrono::system_clock::time_point b = std::chrono::system_clock::now();
 
 void logFPS(std::chrono::duration<double, std::milli> work_time) {
-    int fps = std::min(int(MillisPerSec / work_time.count()), MaxFPS);
+    int possibleFPS = int(MillisPerSec / work_time.count());
+    int fps = std::min(possibleFPS, MaxFPS);
+    
 #ifdef DEBUG
     std::chrono::duration<double, std::milli> sleep_time = b - a;
-
     std::cout.precision(4);
-    std::cout << "FPS: " << fps << " Work: " << std::fixed << work_time.count() << "ms Sleep: " << std::fixed << sleep_time.count() << "ms" << std::endl;
+    std::cout << "FPS: " << fps << " Possible: " << possibleFPS << " Work: " << std::fixed << work_time.count() << "ms Sleep: " << std::fixed << sleep_time.count() << "ms" << std::endl;
 #else
-    std::cout << "FPS: " << fps << std::endl;
+    std::cout << "FPS: " << fps << " Possible: " << possibleFPS << std::endl;
 #endif
 }
 

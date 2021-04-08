@@ -1,9 +1,5 @@
-#include "vulkan.hpp"
-
 namespace game
 {
-VkQueue graphicsQueue;
-VkQueue presentQueue;
 const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
