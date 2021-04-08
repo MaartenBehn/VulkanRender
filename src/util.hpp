@@ -5,12 +5,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <glm/glm.hpp>
 #include <iostream>
 #include <optional>
 #include <set>
 #include <stdexcept>
 #include <vector>
+#include <chrono>
 
 #define RESET "\033[0m"
 #define BLACK "\033[30m"              /* Black */

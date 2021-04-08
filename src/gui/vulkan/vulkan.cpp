@@ -8,7 +8,7 @@
 #include "device.hpp"
 #include "swapChain.hpp"
 #include "renderpass.hpp"
-//#include "descriptor.hpp"
+#include "descriptor.hpp"
 #include "pipline.hpp"
 #include "vertexBuffers.hpp"
 #include "indexBuffer.hpp"
@@ -22,20 +22,36 @@ size_t currentFrame = 0;
 void initVulkan() {
     createInstance();
     setupDebugMessenger();
+
     createSurface();
     pickPhysicalDevice();
     createLogicalDevice();
+
     createSwapChain();
     createImageViews();
+
     createRenderPass();
-    //createDescriptorSetLayout();
+    createDescriptorSetLayout();
     createGraphicsPipeline();
     createFramebuffers();
+
     createCommandPool();
+
     createVertexBuffer();
     createIndexBuffer();
+
+    createUniformBuffers();
+    createDescriptorPool();
+    createDescriptorSets();
+
     createCommandBuffers();
+
     createSyncObjects();
+}
+
+Vulkan::Vulkan(Window *_window) {
+    window = _window;
+    initVulkan();
 }
 
 void cleanupSwapChain() {
@@ -54,6 +70,13 @@ void cleanupSwapChain() {
     }
 
     vkDestroySwapchainKHR(device, swapChain, nullptr);
+
+    for (size_t i = 0; i < swapChainImages.size(); i++) {
+        vkDestroyBuffer(device, uniformBuffers[i], nullptr);
+        vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+    }
+
+    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
 }
 void recreateSwapChain() {
     int width = 0, height = 0;
@@ -71,14 +94,20 @@ void recreateSwapChain() {
     createImageViews();
     createRenderPass();
     createGraphicsPipeline();
+
     createFramebuffers();
+
+    createUniformBuffers();
+    createDescriptorPool();
+    createDescriptorSets();
+
     createCommandBuffers();
 }
 
 void cleanup() {
     cleanupSwapChain();
 
-    //vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
     vkDestroyBuffer(device, indexBuffer, nullptr);
     vkFreeMemory(device, indexBufferMemory, nullptr);
@@ -105,11 +134,6 @@ void cleanup() {
     vkDestroyInstance(instance, nullptr);
 }
 
-Vulkan::Vulkan(Window *_window) {
-    window = _window;
-    initVulkan();
-}
-
 void Vulkan::drawFrame() {
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
@@ -127,6 +151,8 @@ void Vulkan::drawFrame() {
     }
     // Mark the image as now being in use by this frame
     imagesInFlight[imageIndex] = inFlightFences[currentFrame];
+
+    updateUniformBuffer(imageIndex);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
