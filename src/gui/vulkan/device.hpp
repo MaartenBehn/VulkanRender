@@ -20,15 +20,13 @@ bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
 bool isDeviceSuitable(VkPhysicalDevice device) {
     bool extensionsSupported = checkDeviceExtensionSupport(device);
 
-    QueueFamilyIndices indices = findQueueFamilies(device);
-
     bool swapChainAdequate = false;
     if (extensionsSupported) {
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
     }
 
-    return indices.isComplete() && extensionsSupported && swapChainAdequate;
+    return extensionsSupported && swapChainAdequate;
 }
 void pickPhysicalDevice() {
     uint32_t deviceCount = 0;
@@ -81,12 +79,77 @@ void pickPhysicalDevice() {
     }
 }
 
+QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+    std::vector<uint32_t> possibleGraphicsFamilies;
+    std::vector<uint32_t> possiblePresentingFamilies;
+    std::vector<uint32_t> possibleComputingFamilies;
+    std::vector<uint32_t> possibleTransferFamilies;
+
+    uint32_t i = 0;
+    for (const auto &queueFamily : queueFamilies) {
+        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            possibleGraphicsFamilies.push_back(i);
+        }
+
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+        if (presentSupport) {
+            possiblePresentingFamilies.push_back(i);
+        }
+
+        if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+            possibleComputingFamilies.push_back(i);
+        }
+
+        if (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) {
+            possibleTransferFamilies.push_back(i);
+        }
+
+        i++;
+    }
+
+    QueueFamilyIndices bestIndices;
+    int bestDiversity = -1;
+    for (const auto graphicsIndex : possibleGraphicsFamilies) {
+        for (const auto presentingIndex : possiblePresentingFamilies) {
+            for (const auto computeIndex : possibleComputingFamilies) {
+                for (const auto transferIndex : possibleTransferFamilies) {
+                    int diversity =
+                        (graphicsIndex != presentingIndex) +
+                        (graphicsIndex != computeIndex) * 10 +
+                        (graphicsIndex != transferIndex) * 2 +
+                        (presentingIndex != computeIndex) * 5 +
+                        (presentingIndex != transferIndex) * 2 +
+                        (computeIndex != transferIndex);
+
+                    if (diversity > bestDiversity) {
+                        bestDiversity = diversity;
+                        bestIndices = QueueFamilyIndices{graphicsIndex, presentingIndex, computeIndex, transferIndex};
+                    }
+                }
+            }
+        }
+    }
+
+    return bestIndices;
+}
+
 void createLogicalDevice() {
-    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+    queueFamilyIndices = findQueueFamilies(physicalDevice);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = {
-        indices.graphicsFamily.value(), indices.presentFamily.value()};
+        queueFamilyIndices.graphicsFamily, 
+        queueFamilyIndices.presentFamily, 
+        queueFamilyIndices.computeFamily, 
+        queueFamilyIndices.transferFamily
+        };
 
     float queuePriority = 1.0f;
     for (uint32_t queueFamily : uniqueQueueFamilies) {
@@ -103,14 +166,12 @@ void createLogicalDevice() {
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-    createInfo.queueCreateInfoCount =
-        static_cast<uint32_t>(queueCreateInfos.size());
+    createInfo.queueCreateInfoCount =static_cast<uint32_t>(queueCreateInfos.size());
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
     createInfo.pEnabledFeatures = &deviceFeatures;
 
-    createInfo.enabledExtensionCount =
-        static_cast<uint32_t>(deviceExtensions.size());
+    createInfo.enabledExtensionCount =static_cast<uint32_t>(deviceExtensions.size());
     createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
     if (enableValidationLayers) {
@@ -126,39 +187,10 @@ void createLogicalDevice() {
         throw std::runtime_error("failed to create logical device!");
     }
 
-    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
-    vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
-}
-
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
-    QueueFamilyIndices indices;
-
-    uint32_t queueFamilyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-
-    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-
-    int i = 0;
-    for (const auto &queueFamily : queueFamilies) {
-        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            indices.graphicsFamily = i;
-        }
-
-        VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
-        if (presentSupport) {
-            indices.presentFamily = i;
-        }
-
-        if (indices.isComplete()) {
-            break;
-        }
-
-        i++;
-    }
-
-    return indices;
+    vkGetDeviceQueue(device, queueFamilyIndices.graphicsFamily, 0, &graphicsQueue);
+    vkGetDeviceQueue(device, queueFamilyIndices.presentFamily, 0, &presentQueue);
+    vkGetDeviceQueue(device, queueFamilyIndices.computeFamily, 0, &computeQueue);
+    vkGetDeviceQueue(device, queueFamilyIndices.transferFamily, 0, &transferQueue);
 }
 
 } // namespace game

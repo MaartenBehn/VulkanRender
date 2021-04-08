@@ -18,22 +18,21 @@ void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &create
 // Surface
 VkSurfaceKHR surface;
 
-
 // Device
 VkDevice device;
 VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-VkQueue graphicsQueue;
-VkQueue presentQueue;
 
 struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
-
-    bool isComplete() {
-        return graphicsFamily.has_value() && presentFamily.has_value();
-    }
+    uint32_t graphicsFamily;
+    uint32_t presentFamily;
+    uint32_t computeFamily;
+    uint32_t transferFamily;
 };
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+QueueFamilyIndices queueFamilyIndices;
+VkQueue graphicsQueue;
+VkQueue presentQueue;
+VkQueue computeQueue;
+VkQueue transferQueue;
 
 // SwapChain
 struct SwapChainSupportDetails {
@@ -133,7 +132,6 @@ void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
 
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
-
 
 // Vertex Buffer
 VkBuffer vertexBuffer;
