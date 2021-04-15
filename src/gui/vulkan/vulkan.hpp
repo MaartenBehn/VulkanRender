@@ -4,12 +4,14 @@
 #include "../gui.hpp"
 #include "../glfw/window.hpp"
 
-namespace game {
-class Vulkan {
-   public:
-    Vulkan(Window *_window);
-    ~Vulkan();
-    void drawFrame();
-    void waitForDeviceDone();
-};
-}  // namespace game
+namespace game
+{
+    class Vulkan
+    {
+    public:
+        Vulkan(Window *_window);
+        ~Vulkan();
+        void drawFrame();
+        void waitForDeviceDone();
+    };
+} // namespace game
