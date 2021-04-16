@@ -64,6 +64,8 @@ int main() {
 
         vulkan->waitForDeviceDone();
 
+        vulkan->computeRun();
+
         vulkan->~Vulkan();
         window->~Window();
     } catch (const std::exception& e) {

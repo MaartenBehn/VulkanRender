@@ -1,7 +1,7 @@
 namespace game
 {
 
-    static std::vector<char> readBinFile(const std::string &filename)
+    static std::vector<char> readFile(const std::string &filename)
     {
         std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -66,8 +66,8 @@ namespace game
     void createGraphicsPipeline()
     {
         // Loading of Shaders
-        auto vertShaderCode = readBinFile("src/gui/shaders/vert.spv");
-        auto fragShaderCode = readBinFile("src/gui/shaders/frag.spv");
+        auto vertShaderCode = readFile("src/gui/shaders/vert.spv");
+        auto fragShaderCode = readFile("src/gui/shaders/frag.spv");
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -176,7 +176,7 @@ namespace game
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 1;                 // Optional
-        pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout; // Optional
+        pipelineLayoutInfo.pSetLayouts = &graphicsDescriptorSetLayout; // Optional
         pipelineLayoutInfo.pushConstantRangeCount = 0;         // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr;      // Optional
 
@@ -216,10 +216,6 @@ namespace game
         // Deleting Shaders because no longer needed
         vkDestroyShaderModule(device, fragShaderModule, nullptr);
         vkDestroyShaderModule(device, vertShaderModule, nullptr);
-    }
-
-    void createComputePipeline(){
-
     }
 
 } // namespace game

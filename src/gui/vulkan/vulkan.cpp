@@ -68,7 +68,7 @@ namespace game
             vkDestroyFramebuffer(device, swapChainFramebuffers[i], nullptr);
         }
 
-        vkFreeCommandBuffers(device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+        vkFreeCommandBuffers(device, graphicsCommandPool, static_cast<uint32_t>(graphicsCommandBuffers.size()), graphicsCommandBuffers.data());
 
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(device, graphicsPipelineLayout, nullptr);
@@ -87,7 +87,7 @@ namespace game
             vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
         }
 
-        vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+        vkDestroyDescriptorPool(device, graphicsDescriptorPool, nullptr);
     }
     void recreateSwapChain()
     {
@@ -121,7 +121,7 @@ namespace game
     {
         cleanupSwapChain();
 
-        vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+        vkDestroyDescriptorSetLayout(device, graphicsDescriptorSetLayout, nullptr);
 
         vkDestroyBuffer(device, indexBuffer, nullptr);
         vkFreeMemory(device, indexBufferMemory, nullptr);
@@ -136,7 +136,7 @@ namespace game
             vkDestroyFence(device, inFlightFences[i], nullptr);
         }
 
-        vkDestroyCommandPool(device, commandPool, nullptr);
+        vkDestroyCommandPool(device, graphicsCommandPool, nullptr);
 
         vkDestroyDevice(device, nullptr);
 
@@ -185,7 +185,7 @@ namespace game
         submitInfo.pWaitDstStageMask = waitStages;
 
         submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+        submitInfo.pCommandBuffers = &graphicsCommandBuffers[imageIndex];
 
         VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
         submitInfo.signalSemaphoreCount = 1;
@@ -235,6 +235,29 @@ namespace game
     Vulkan::~Vulkan()
     {
         cleanup();
+    }
+
+    void Vulkan::computeRun()
+    {
+        // Buffer size of the storage buffer that will contain the rendered mandelbrot set.
+        computeBufferSize = sizeof(Pixel) * WIDTH * HEIGHT;
+
+        // Initialize vulkan:
+        computeCreateBuffer();
+        createComputeDescriptorSetLayout();
+        createDescriptorSet();
+        createComputePipeline();
+        createCommandBuffer();
+
+        // Finally, run the recorded command buffer.
+        runCommandBuffer();
+
+        // The former command rendered a mandelbrot set to a buffer.
+        // Save that buffer as a png on disk.
+        computeSaveRenderedImage();
+
+        // Clean up all vulkan resources.
+        computeCleanup();
     }
 
 } // namespace game

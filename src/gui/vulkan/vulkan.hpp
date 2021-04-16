@@ -13,5 +13,7 @@ namespace game
         ~Vulkan();
         void drawFrame();
         void waitForDeviceDone();
+
+        void computeRun();
     };
 } // namespace game

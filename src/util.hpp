@@ -2,7 +2,6 @@
 
 #include <algorithm>  // Necessary for std::min/std::max
 #include <cstdint>    // Necessary for UINT32_MAX
-#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -11,6 +10,9 @@
 #include <stdexcept>
 #include <vector>
 #include <chrono>
+#include <string.h>
+#include <assert.h>
+#include <cmath>
 
 #define RESET "\033[0m"
 #define BLACK "\033[30m"              /* Black */

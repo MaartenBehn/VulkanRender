@@ -12,6 +12,17 @@ namespace game
 #else
     const bool enableValidationLayers = false;
 #endif
+
+#define VK_CHECK_RESULT(f)                                                                \
+    {                                                                                     \
+        VkResult res = (f);                                                               \
+        if (res != VK_SUCCESS)                                                            \
+        {                                                                                 \
+            printf("Fatal : VkResult is %d in %s at line %d\n", res, __FILE__, __LINE__); \
+            assert(res == VK_SUCCESS);                                                    \
+        }                                                                                 \
+    }
+
     const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
     VkDebugUtilsMessengerEXT debugMessenger;
     bool checkValidationLayerSupport();
@@ -65,15 +76,25 @@ namespace game
     // Compute Pipeline
     VkPipeline computePipeline;
     VkPipelineLayout computePipelineLayout;
+    VkShaderModule computeShaderModule;
+
+    static std::vector<char> readFile(const std::string &filename);
 
     // Comand
-    VkCommandPool commandPool;
-    std::vector<VkCommandBuffer> commandBuffers;
+    VkCommandPool graphicsCommandPool;
+    std::vector<VkCommandBuffer> graphicsCommandBuffers;
+
+    VkCommandPool computeCommandPool;
+    VkCommandBuffer computeCommandBuffer;
 
     // Descriptor
-    VkDescriptorPool descriptorPool;
-    VkDescriptorSetLayout descriptorSetLayout;
-    std::vector<VkDescriptorSet> descriptorSets;
+    VkDescriptorPool graphicsDescriptorPool;
+    VkDescriptorSetLayout graphicsDescriptorSetLayout;
+    std::vector<VkDescriptorSet> graphicsDescriptorSets;
+
+    VkDescriptorPool computeDescriptorPool;
+    VkDescriptorSet cpmouteDescriptorSet;
+    VkDescriptorSetLayout computeDescriptorSetLayout;
 
     struct UniformBufferObject
     {
@@ -105,16 +126,13 @@ namespace game
         0, 1, 2, 2, 3, 0};
 
     // Compute Buffer
-
     struct Pixel {
         float r, g, b, a;
     };
-    
-    const int computeWith = 100;
-    const int computeHeight = 100;
 
     VkBuffer computeBuffer;
     VkDeviceMemory computeBufferMemory;
+        
     uint32_t computeBufferSize; // size of `buffer` in bytes.
 
     // Sync
