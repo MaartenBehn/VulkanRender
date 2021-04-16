@@ -1,3 +1,4 @@
+
 namespace game
 {
 
@@ -57,13 +58,32 @@ namespace game
     // Renderpass
     VkRenderPass renderPass;
 
-    // Pipeline
+    // Graphics Pipeline
     VkPipeline graphicsPipeline;
-    VkPipelineLayout pipelineLayout;
+    VkPipelineLayout graphicsPipelineLayout;
+
+    // Compute Pipeline
+    VkPipeline computePipeline;
+    VkPipelineLayout computePipelineLayout;
 
     // Comand
     VkCommandPool commandPool;
     std::vector<VkCommandBuffer> commandBuffers;
+
+    // Descriptor
+    VkDescriptorPool descriptorPool;
+    VkDescriptorSetLayout descriptorSetLayout;
+    std::vector<VkDescriptorSet> descriptorSets;
+
+    struct UniformBufferObject
+    {
+        glm::mat4 model;
+        glm::mat4 view;
+        glm::mat4 proj;
+    };
+
+    std::vector<VkBuffer> uniformBuffers;
+    std::vector<VkDeviceMemory> uniformBuffersMemory;
 
     // Vertex Buffer
     VkBuffer vertexBuffer;
@@ -84,20 +104,18 @@ namespace game
     const std::vector<uint16_t> indices = {
         0, 1, 2, 2, 3, 0};
 
-    // Descriptor
-    VkDescriptorPool descriptorPool;
-    VkDescriptorSetLayout descriptorSetLayout;
-    std::vector<VkDescriptorSet> descriptorSets;
+    // Compute Buffer
 
-    struct UniformBufferObject
-    {
-        glm::mat4 model;
-        glm::mat4 view;
-        glm::mat4 proj;
+    struct Pixel {
+        float r, g, b, a;
     };
+    
+    const int computeWith = 100;
+    const int computeHeight = 100;
 
-    std::vector<VkBuffer> uniformBuffers;
-    std::vector<VkDeviceMemory> uniformBuffersMemory;
+    VkBuffer computeBuffer;
+    VkDeviceMemory computeBufferMemory;
+    uint32_t computeBufferSize; // size of `buffer` in bytes.
 
     // Sync
     std::vector<VkSemaphore> imageAvailableSemaphores;

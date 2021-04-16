@@ -180,7 +180,7 @@ namespace game
         pipelineLayoutInfo.pushConstantRangeCount = 0;         // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr;      // Optional
 
-        if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+        if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &graphicsPipelineLayout) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create pipeline layout!");
         }
@@ -200,7 +200,7 @@ namespace game
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDynamicState = nullptr; // Optional
 
-        pipelineInfo.layout = pipelineLayout;
+        pipelineInfo.layout = graphicsPipelineLayout;
 
         pipelineInfo.renderPass = renderPass;
         pipelineInfo.subpass = 0;
@@ -216,6 +216,10 @@ namespace game
         // Deleting Shaders because no longer needed
         vkDestroyShaderModule(device, fragShaderModule, nullptr);
         vkDestroyShaderModule(device, vertShaderModule, nullptr);
+    }
+
+    void createComputePipeline(){
+
     }
 
 } // namespace game

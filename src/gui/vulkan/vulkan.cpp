@@ -3,6 +3,8 @@
 
 #include "buffer.hpp"
 
+#include "compute.hpp"
+
 #include "instance.hpp"
 #include "validation.hpp"
 #include "surface.hpp"
@@ -69,7 +71,7 @@ namespace game
         vkFreeCommandBuffers(device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
 
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        vkDestroyPipelineLayout(device, graphicsPipelineLayout, nullptr);
         vkDestroyRenderPass(device, renderPass, nullptr);
 
         for (size_t i = 0; i < swapChainImageViews.size(); i++)
