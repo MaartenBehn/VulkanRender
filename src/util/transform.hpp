@@ -52,8 +52,8 @@ namespace game
         if (needsRotateMatrixUpdate)
         {
             rotationMatrix = glm::mat4(1);
-            rotationMatrix *= glm::rotate(rotationMatrix, rotation.y, glm::vec3(0, 1, 0));
             rotationMatrix *= glm::rotate(rotationMatrix, rotation.x, glm::vec3(1, 0, 0));
+            rotationMatrix *= glm::rotate(rotationMatrix, rotation.y, glm::vec3(0, 1, 0));
             rotationMatrix *= glm::rotate(rotationMatrix, rotation.z, glm::vec3(0, 0, 1));
 
             needsRotateMatrixUpdate = false;

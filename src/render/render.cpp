@@ -48,6 +48,7 @@ namespace game
 
         createGraphicsPipeline();
 
+        createMesh();
         createVertexBuffer();
         createIndexBuffer();
 

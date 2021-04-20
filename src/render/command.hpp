@@ -68,7 +68,7 @@ namespace game
 
             vkCmdBindDescriptorSets(graphicsCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipelineLayout, 0, 1, &graphicsDescriptorSets[i], 0, nullptr);
 
-            vkCmdDrawIndexed(graphicsCommandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+            vkCmdDrawIndexed(graphicsCommandBuffers[i], static_cast<uint32_t>(mesh.indices.size()), 1, 0, 0, 0);
 
             vkCmdEndRenderPass(graphicsCommandBuffers[i]);
 

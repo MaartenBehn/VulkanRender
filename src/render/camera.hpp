@@ -49,7 +49,7 @@ namespace game
 
         if (window->buttonDown(GLFW_MOUSE_BUTTON_1)){
             glm::vec2 delta = window->mouseDelta;
-            cameraTransform.rotate(glm::vec3(delta.y * deltaTime * mouseSpeed, -1 * delta.x * deltaTime * mouseSpeed, 0));
+            cameraTransform.rotate(glm::vec3(-1 * delta.y * deltaTime * mouseSpeed, -1 * delta.x * deltaTime * mouseSpeed, 0));
         }
     }
 } // namespace game

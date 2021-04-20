@@ -89,6 +89,14 @@
     "streambuf": "cpp",
     "cinttypes": "cpp",
     "typeinfo": "cpp",
-    "queue": "cpp"
+    "queue": "cpp",
+    "chrono": "cpp",
+    "ctime": "cpp",
+    "map": "cpp",
+    "set": "cpp",
+    "ratio": "cpp",
+    "fstream": "cpp",
+    "stop_token": "cpp",
+    "thread": "cpp"
 }
  }

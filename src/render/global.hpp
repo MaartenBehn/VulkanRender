@@ -2,7 +2,8 @@
 
 #include "../gui.hpp"
 #include "../window/window.hpp"
-#include "../transform.hpp"
+#include "../util/transform.hpp"
+#include "../util/mesh.hpp"
 
 #include <algorithm> // Necessary for std::min/std::max
 #include <cstdint>   // Necessary for UINT32_MAX
@@ -81,6 +82,7 @@ namespace game
         uint32_t computeFamily;
         uint32_t transferFamily;
     };
+
     QueueFamilyIndices queueFamilyIndices;
     VkQueue graphicsQueue;
     VkQueue presentQueue;
@@ -112,13 +114,6 @@ namespace game
     std::vector<VkFramebuffer> swapChainFramebuffers;
 
     void createFramebuffers();
-
-    // Vertex
-    struct Vertex
-    {
-        glm::vec2 pos;
-        glm::vec3 color;
-    };
 
     // Descriptor
     VkDescriptorPool graphicsDescriptorPool;
@@ -153,27 +148,14 @@ namespace game
 
     // Mesh
     const int triangleAmmount = 2;
+    Mesh mesh;
 
     VkDeviceMemory vertexBufferMemory;
     VkBuffer vertexBuffer;
     void *vertexBufferdata;
 
-    std::vector<Vertex> vertices = {
-        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-        {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}};
-        
     VkDeviceMemory indexBufferMemory;
     VkBuffer indexBuffer;
-
-    const std::vector<uint16_t> indices = {
-        0, 1, 2, 3, 4, 5};
-
-    glm::cross
-    
 
     // Comand
     VkCommandPool graphicsCommandPool;
@@ -194,4 +176,14 @@ namespace game
     Transform cameraTransform;
     const float cameraSpeed = 10.0f;
     const float mouseSpeed = 0.5f;
+
+    // Particles
+    struct Particle
+    {
+        glm::vec3 pos;
+    };
+    
+
+    std::vector<Particle> particles;
+    const float maxParticleDistance = 1.2f;
 } // namespace game
