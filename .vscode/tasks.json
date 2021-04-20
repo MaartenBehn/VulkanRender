@@ -16,7 +16,7 @@
         {
             "label": "compleShaders",
             "type": "shell",
-            "command": "sh src/gui/shaders/compile.sh"
+            "command": "sh shaders/compile.sh"
         },
         {
             "label": "preLaunch",
@@ -24,6 +24,11 @@
                 "compleShaders",
                 "makeProject"
             ]
+        },
+        {
+            "label": "profile",
+            "type": "shell",
+            "command": "sh shaders/compile.sh" 
         },
     ]
 }

@@ -1,21 +1,21 @@
-#include "gui/glfw/window.hpp"
-#include "gui/vulkan/vulkan.hpp"
+#include "window/window.hpp"
+#include "render/render.hpp"
 
-#include <iostream>
 #include <cstdio>
 #include <chrono>
 #include <thread>
 
-#define MaxFPS 30
-#define MillisPerSec 1000
+#define MaxFPS 30.0
+#define MillisPerSec 1000.0
 #define MillisPerFrame MillisPerSec / MaxFPS
 
 game::Window* window;
-game::Vulkan* vulkan;
+game::Render* render;
 
+float delta;
 void renderLoop() {
-    window->performEvents();
-    vulkan->drawFrame();
+    window->update();
+    render->drawFrame(delta);
 }
 
 bool checkRunning() {
@@ -26,15 +26,16 @@ std::chrono::system_clock::time_point a = std::chrono::system_clock::now();
 std::chrono::system_clock::time_point b = std::chrono::system_clock::now();
 
 void logFPS(std::chrono::duration<double, std::milli> work_time) {
-    int possibleFPS = int(MillisPerSec / work_time.count());
-    int fps = std::min(possibleFPS, MaxFPS);
+    double possibleFPS = MillisPerSec / work_time.count();
+    double fps = std::min(possibleFPS, MaxFPS);
     
 #ifdef DEBUG
     std::chrono::duration<double, std::milli> sleep_time = b - a;
-    std::cout.precision(4);
-    std::cout << "FPS: " << fps << " Possible: " << possibleFPS << " Work: " << std::fixed << work_time.count() << "ms Sleep: " << std::fixed << sleep_time.count() << "ms" << std::endl;
+
+    printf("FPS: %.0f Possible: %0.f Work: %.4fms Sleep: %.4fms\n", fps, possibleFPS, work_time.count(), sleep_time.count());
 #else
-    std::cout << "FPS: " << fps << " Possible: " << possibleFPS << std::endl;
+
+    printf("FPS: %.0f Possible: %.0f\n", fps, possibleFPS);
 #endif
 }
 
@@ -44,9 +45,14 @@ void run() {
         std::chrono::duration<double, std::milli> work_time = a - b;
 
         if (work_time.count() < MillisPerFrame) {
+            delta = MillisPerFrame / MillisPerSec;
+
             std::chrono::duration<double, std::milli> delta_ms(MillisPerFrame - work_time.count());
             auto delta_ms_duration = std::chrono::duration_cast<std::chrono::milliseconds>(delta_ms);
             std::this_thread::sleep_for(std::chrono::milliseconds(delta_ms_duration.count()));
+        }
+        else {
+            delta = work_time.count() / MillisPerSec;
         }
         b = std::chrono::system_clock::now();
 
@@ -58,18 +64,14 @@ void run() {
 int main() {
     try {
         window = new game::Window();
-        vulkan = new game::Vulkan(window);
+        render = new game::Render(window);
 
         run();
 
-        vulkan->waitForDeviceDone();
-
-        vulkan->computeRun();
-
-        vulkan->~Vulkan();
+        render->~Render();
         window->~Window();
     } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
+        printf("%s\n", e.what());
         return EXIT_FAILURE;
     }
 
