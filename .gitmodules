@@ -1,0 +1,3 @@
+[submodule "vendor/spheres"]
+	path = vendor/spheres
+	url = https://github.com/caosdoar/spheres
