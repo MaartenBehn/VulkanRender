@@ -52,8 +52,6 @@
         }                                                                                       \
     }
 
-
-
 namespace game
 {
     Window *window;
@@ -137,6 +135,7 @@ namespace game
     void createUniformBuffers();
 
     // Buffer
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
@@ -185,5 +184,17 @@ namespace game
     
 
     std::vector<Particle> particles;
-    const float maxParticleDistance = 1.2f;
+    const float maxParticleDistance = 1.1f;
+
+
+    // Depth
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
+    // Image
+    void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
+    VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+    VkFormat findDepthFormat();
+
 } // namespace game

@@ -15,6 +15,8 @@
 #include "mesh.hpp"
 #include "sync.hpp"
 #include "camera.hpp"
+#include "depth.hpp"
+#include "image.hpp"
 
 namespace game
 {
@@ -40,6 +42,8 @@ namespace game
         createFramebuffers();
 
         createCommandPool();
+
+        createDepthResources();
 
         createUniformBuffers();
         createDescriptorPool();
