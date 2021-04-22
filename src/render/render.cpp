@@ -20,12 +20,13 @@
 
 namespace game
 {
-    Render::Render(Window *_window){
+    Render::Render(Window *_window)
+    {
         window = _window;
 
         cameraTransform = Transform();
-        cameraTransform.setRot(glm::vec3(0,0,0));
-        cameraTransform.setPos(glm::vec3(0,0,-5));
+        cameraTransform.setRot(glm::vec3(0, 0, 0));
+        cameraTransform.setPos(glm::vec3(0, 0, -50));
 
         createInstance();
         setupDebugMessenger();
@@ -39,11 +40,10 @@ namespace game
         createImageViews();
 
         createRenderPass();
-        createFramebuffers();
-
         createCommandPool();
 
         createDepthResources();
+        createFramebuffers();
 
         createUniformBuffers();
         createDescriptorPool();
@@ -54,14 +54,14 @@ namespace game
 
         createMesh();
         createVertexBuffer();
-        createIndexBuffer();
 
         createCommandBuffers();
 
         createSyncObjects();
     }
 
-    void Render::drawFrame(float delta){
+    void Render::drawFrame(float delta)
+    {
         deltaTime = delta;
 
         uint32_t imageIndex;
@@ -147,9 +147,6 @@ namespace game
 
         vkDestroyDescriptorSetLayout(device, graphicsDescriptorSetLayout, nullptr);
 
-        vkDestroyBuffer(device, indexBuffer, nullptr);
-        vkFreeMemory(device, indexBufferMemory, nullptr);
-
         cleanUpVertexBuffer();
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
@@ -173,7 +170,8 @@ namespace game
         vkDestroyInstance(instance, nullptr);
     }
 
-    Render::~Render(){
+    Render::~Render()
+    {
         vkDeviceWaitIdle(device);
         cleanup();
     }

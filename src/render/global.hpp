@@ -3,7 +3,6 @@
 #include "../gui.hpp"
 #include "../window/window.hpp"
 #include "../util/transform.hpp"
-#include "../util/mesh.hpp"
 
 #include <algorithm> // Necessary for std::min/std::max
 #include <cstdint>   // Necessary for UINT32_MAX
@@ -124,7 +123,6 @@ namespace game
 
     struct UniformBufferObject
     {
-        glm::mat4 model;
         glm::mat4 view;
         glm::mat4 proj;
     };
@@ -146,15 +144,22 @@ namespace game
     void createGraphicsPipeline();
 
     // Mesh
-    const int triangleAmmount = 2;
+    struct Vertex
+    {
+        glm::vec3 pos;
+        glm::vec3 color;
+    };
+
+    struct Mesh
+    {
+        std::vector<Vertex> vertices;
+    };
+
     Mesh mesh;
 
     VkDeviceMemory vertexBufferMemory;
     VkBuffer vertexBuffer;
     void *vertexBufferdata;
-
-    VkDeviceMemory indexBufferMemory;
-    VkBuffer indexBuffer;
 
     // Comand
     VkCommandPool graphicsCommandPool;
@@ -173,8 +178,8 @@ namespace game
 
     // Camera
     Transform cameraTransform;
-    const float cameraSpeed = 10.0f;
-    const float mouseSpeed = 0.5f;
+    const float cameraSpeed = 1.0f;
+    const float mouseSpeed = 3.0f;
 
     // Particles
     struct Particle
@@ -182,15 +187,18 @@ namespace game
         glm::vec3 pos;
     };
     
-
+    const int particleAmmount = 100;
     std::vector<Particle> particles;
-    const float maxParticleDistance = 1.1f;
+    const float maxParticleDistance = 4.0f;
+    const int minNearParticles = 5;
 
+    const int bounds = 20;
 
     // Depth
     VkImage depthImage;
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
+    void createDepthResources();
 
     // Image
     void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);

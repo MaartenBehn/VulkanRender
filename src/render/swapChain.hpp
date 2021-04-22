@@ -166,6 +166,10 @@ namespace game
 
     void cleanupSwapChain()
     {
+        vkDestroyImageView(device, depthImageView, nullptr);
+        vkDestroyImage(device, depthImage, nullptr);
+        vkFreeMemory(device, depthImageMemory, nullptr);
+
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(device, graphicsPipelineLayout, nullptr);
         vkDestroyRenderPass(device, renderPass, nullptr);
@@ -208,6 +212,7 @@ namespace game
         createImageViews();
 
         createRenderPass();
+        createDepthResources();
         createFramebuffers();
 
         createUniformBuffers();

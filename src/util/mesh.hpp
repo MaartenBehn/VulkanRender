@@ -7,17 +7,7 @@
 namespace game
 {
     
-    struct Vertex
-    {
-        glm::vec3 pos;
-        glm::vec3 color;
-    };
-
-    struct Mesh
-    {
-        std::vector<Vertex> vertices;
-        std::vector<uint16_t> indices;
-    };
+    
 } // namespace game
 
 game::Mesh genSphere(float radius)
