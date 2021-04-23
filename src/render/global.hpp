@@ -153,6 +153,7 @@ namespace game
     struct Mesh
     {
         std::vector<Vertex> vertices;
+        std::vector<uint16_t> indices;
     };
 
     Mesh mesh;
@@ -160,6 +161,10 @@ namespace game
     VkDeviceMemory vertexBufferMemory;
     VkBuffer vertexBuffer;
     void *vertexBufferdata;
+
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
+    void *indexBufferdata;
 
     // Comand
     VkCommandPool graphicsCommandPool;

@@ -78,6 +78,11 @@ namespace game
                         mesh.vertices.push_back(vertex);
                         mesh.vertices.push_back(vertex1);
                         mesh.vertices.push_back(vertex2);
+
+                        uint16_t index = mesh.indices.size();
+                        mesh.indices.push_back(index);
+                        mesh.indices.push_back(index + 1);
+                        mesh.indices.push_back(index + 2);
                     }
                 }
             }
@@ -101,7 +106,6 @@ namespace game
     {
         VkDeviceSize bufferSize = sizeof(mesh.vertices[0]) * mesh.vertices.size();
 
-        //mesh.vertices[0].pos = glm::vec3(0.0f, 0.01f, 0) + mesh.vertices[0].pos;
         memcpy(vertexBufferdata, mesh.vertices.data(), (size_t)bufferSize);
     }
 
@@ -111,4 +115,28 @@ namespace game
         vkDestroyBuffer(device, vertexBuffer, nullptr);
         vkFreeMemory(device, vertexBufferMemory, nullptr);
     }
+
+    void createIndexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(mesh.indices[0]) * mesh.indices.size();
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                     indexBuffer, indexBufferMemory);
+
+        vkMapMemory(device, indexBufferMemory, 0, bufferSize, 0, &indexBufferdata);
+    }
+
+    void updateIndexBuffer(){
+        VkDeviceSize bufferSize = sizeof(mesh.indices[0]) * mesh.indices.size();
+
+        memcpy(indexBufferdata, mesh.indices.data(), (size_t)bufferSize);
+    }
+
+    void cleanUpIndexBuffer(){
+        vkUnmapMemory(device, indexBufferMemory);
+        vkDestroyBuffer(device, indexBuffer, nullptr);
+        vkFreeMemory(device, indexBufferMemory, nullptr);
+    }
+
 } // namespace game

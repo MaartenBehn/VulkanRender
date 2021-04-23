@@ -54,10 +54,14 @@ namespace game
 
         createMesh();
         createVertexBuffer();
+        createIndexBuffer();
 
         createCommandBuffers();
 
         createSyncObjects();
+
+        updateVertexBuffer();
+        updateIndexBuffer();
     }
 
     void Render::drawFrame(float delta)
@@ -87,7 +91,7 @@ namespace game
 
         updateCamera();
         updateUniformBuffer(imageIndex);
-        updateVertexBuffer();
+        //updateVertexBuffer();
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -148,6 +152,7 @@ namespace game
         vkDestroyDescriptorSetLayout(device, graphicsDescriptorSetLayout, nullptr);
 
         cleanUpVertexBuffer();
+        cleanUpIndexBuffer();
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {

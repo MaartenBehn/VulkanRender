@@ -67,9 +67,11 @@ namespace game
             VkDeviceSize offsets[] = {0};
             vkCmdBindVertexBuffers(graphicsCommandBuffers[i], 0, 1, vertexBuffers, offsets);
 
+            vkCmdBindIndexBuffer(graphicsCommandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+
             vkCmdBindDescriptorSets(graphicsCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipelineLayout, 0, 1, &graphicsDescriptorSets[i], 0, nullptr);
 
-            vkCmdDraw(graphicsCommandBuffers[i], static_cast<uint32_t>(mesh.vertices.size()), 1, 0, 0);
+            vkCmdDrawIndexed(graphicsCommandBuffers[i], static_cast<uint32_t>(mesh.indices.size()), 1, 0, 0, 0);
 
             vkCmdEndRenderPass(graphicsCommandBuffers[i]);
 
