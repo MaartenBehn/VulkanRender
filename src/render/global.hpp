@@ -190,11 +190,12 @@ namespace game
     struct Particle
     {
         glm::vec3 pos;
+        int id;
     };
     
     const int particleAmmount = 100;
     std::vector<Particle> particles;
-    const float maxParticleDistance = 4.0f;
+    const float maxParticleDistance = 10.0f;
     const int minNearParticles = 5;
 
     const int bounds = 20;

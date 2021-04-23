@@ -91,7 +91,8 @@ namespace game
 
         updateCamera();
         updateUniformBuffer(imageIndex);
-        //updateVertexBuffer();
+        updateVertexBuffer();
+        updateIndexBuffer();
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

@@ -16,7 +16,18 @@ namespace game
                 (float)(rand() % bounds),
                 (float)(rand() % bounds),
                 (float)(rand() % bounds));
+            particles[i].id = i;
+                
             printf("%ld\r", i);
+
+            Vertex vertex = Vertex();
+            vertex.pos = particles[i].pos;
+            vertex.color = glm::vec3(
+                (float)(rand() % 255) / 255,
+                (float)(rand() % 255) / 255,
+                (float)(rand() % 255) / 255);
+
+            mesh.vertices.push_back(vertex);
         }
 
         for (size_t i = 0; i < particles.size(); i++)
@@ -36,6 +47,7 @@ namespace game
 
             if (nearPartiles.size() < minNearParticles)
             {
+
                 continue;
             }
 
@@ -60,35 +72,16 @@ namespace game
                             continue;
                         }
 
-                        Vertex vertex = Vertex();
-                        vertex.pos = nearPartiles[j].pos;
-                        vertex.color = glm::vec3(
-                            (float)(rand() % 255) / 255,
-                            (float)(rand() % 255) / 255,
-                            (float)(rand() % 255) / 255);
-
-                        Vertex vertex1 = Vertex();
-                        vertex1.pos = nearPartiles[j1].pos;
-                        vertex1.color = vertex.color;
-
-                        Vertex vertex2 = Vertex();
-                        vertex2.pos = nearPartiles[j2].pos;
-                        vertex2.color = vertex.color;
-
-                        mesh.vertices.push_back(vertex);
-                        mesh.vertices.push_back(vertex1);
-                        mesh.vertices.push_back(vertex2);
-
-                        uint16_t index = mesh.indices.size();
-                        mesh.indices.push_back(index);
-                        mesh.indices.push_back(index + 1);
-                        mesh.indices.push_back(index + 2);
+                        mesh.indices.push_back(nearPartiles[j].id);
+                        mesh.indices.push_back(nearPartiles[j1].id);
+                        mesh.indices.push_back(nearPartiles[j2].id);
                     }
                 }
             }
         }
 
         printf("%ld\n", mesh.vertices.size());
+        printf("%ld\n", mesh.indices.size());
     }
 
     void createVertexBuffer()
@@ -127,13 +120,15 @@ namespace game
         vkMapMemory(device, indexBufferMemory, 0, bufferSize, 0, &indexBufferdata);
     }
 
-    void updateIndexBuffer(){
+    void updateIndexBuffer()
+    {
         VkDeviceSize bufferSize = sizeof(mesh.indices[0]) * mesh.indices.size();
 
         memcpy(indexBufferdata, mesh.indices.data(), (size_t)bufferSize);
     }
 
-    void cleanUpIndexBuffer(){
+    void cleanUpIndexBuffer()
+    {
         vkUnmapMemory(device, indexBufferMemory);
         vkDestroyBuffer(device, indexBuffer, nullptr);
         vkFreeMemory(device, indexBufferMemory, nullptr);
