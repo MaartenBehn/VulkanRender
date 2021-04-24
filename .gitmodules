@@ -1,3 +1,6 @@
 [submodule "vendor/spheres"]
 	path = vendor/spheres
 	url = https://github.com/caosdoar/spheres
+[submodule "vendor/delaunator-cpp"]
+	path = vendor/delaunator-cpp
+	url = https://github.com/delfrrr/delaunator-cpp

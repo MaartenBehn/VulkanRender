@@ -26,7 +26,7 @@ namespace game
 
         cameraTransform = Transform();
         cameraTransform.setRot(glm::vec3(0, 0, 0));
-        cameraTransform.setPos(glm::vec3(0, 0, -50));
+        cameraTransform.setPos(glm::vec3(-bounds / 2.0f, -bounds / 2.0f, -10.0f));
 
         createInstance();
         setupDebugMessenger();
@@ -91,8 +91,8 @@ namespace game
 
         updateCamera();
         updateUniformBuffer(imageIndex);
-        updateVertexBuffer();
-        updateIndexBuffer();
+        //updateVertexBuffer();
+        //updateIndexBuffer();
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

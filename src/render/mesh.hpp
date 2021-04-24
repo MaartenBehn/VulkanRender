@@ -1,6 +1,7 @@
 #pragma once
 
 #include "global.hpp"
+#include "../../vendor/include/delaunator.hpp"
 
 namespace game
 {
@@ -8,76 +9,56 @@ namespace game
     {
         mesh = Mesh();
 
-        particles = std::vector<Particle>(particleAmmount);
+        std::vector<double> coords;
         for (size_t i = 0; i < particleAmmount; i++)
         {
-            particles[i] = Particle();
-            particles[i].pos = glm::vec3(
-                (float)(rand() % bounds),
+            Vertex vertex = Vertex();
+
+            vertex.pos = glm::vec2(
                 (float)(rand() % bounds),
                 (float)(rand() % bounds));
-            particles[i].id = i;
-                
-            printf("%ld\r", i);
 
-            Vertex vertex = Vertex();
-            vertex.pos = particles[i].pos;
             vertex.color = glm::vec3(
                 (float)(rand() % 255) / 255,
                 (float)(rand() % 255) / 255,
                 (float)(rand() % 255) / 255);
 
             mesh.vertices.push_back(vertex);
+
+            coords.push_back(vertex.pos.x);
+            coords.push_back(vertex.pos.y);
         }
 
-        for (size_t i = 0; i < particles.size(); i++)
+        delaunator::Delaunator d(coords);
+
+        for (std::size_t i = 0; i < d.triangles.size(); i += 3)
         {
-            printf("%ld\r", i);
-            std::vector<Particle> nearPartiles = std::vector<Particle>();
+            glm::vec2 p = glm::vec2(
+                d.coords[2 * d.triangles[i]], 
+                d.coords[2 * d.triangles[i] + 1]
+                );
+            
+            glm::vec2 p1 = glm::vec2(
+                d.coords[2 * d.triangles[i + 1]], 
+                d.coords[2 * d.triangles[i + 1] + 1]
+                );
 
-            for (size_t j = 0; j < particles.size(); j++)
-            {
-                float dist = glm::distance(particles[i].pos, particles[j].pos);
+            glm::vec2 p2 = glm::vec2(
+                d.coords[2 * d.triangles[i + 2]], 
+                d.coords[2 * d.triangles[i + 2] + 1]
+                );
 
-                if (dist < maxParticleDistance)
-                {
-                    nearPartiles.push_back(particles[j]);
-                }
-            }
+            float dist = glm::distance(p, p1);
+            float dist1 = glm::distance(p1, p2);
+            float dist2 = glm::distance(p2, p);
 
-            if (nearPartiles.size() < minNearParticles)
-            {
-
+            if (dist > maxParticleDistance || dist1 > maxParticleDistance || dist2 > maxParticleDistance){
                 continue;
             }
 
-            for (size_t j = 0; j < nearPartiles.size(); j++)
-            {
-                for (size_t j1 = 0; j1 < nearPartiles.size(); j1++)
-                {
-                    for (size_t j2 = 0; j2 < nearPartiles.size(); j2++)
-                    {
-
-                        if (j == j1 || j == j2 || j1 == j2)
-                        {
-                            continue;
-                        }
-
-                        float x = nearPartiles[j].pos.x;
-                        float x1 = nearPartiles[j1].pos.x;
-                        float x2 = nearPartiles[j2].pos.x;
-
-                        if (x > x1 || x > x2)
-                        {
-                            continue;
-                        }
-
-                        mesh.indices.push_back(nearPartiles[j].id);
-                        mesh.indices.push_back(nearPartiles[j1].id);
-                        mesh.indices.push_back(nearPartiles[j2].id);
-                    }
-                }
-            }
+            mesh.indices.push_back(d.triangles[i]);
+            mesh.indices.push_back(d.triangles[i + 1]);
+            mesh.indices.push_back(d.triangles[i + 2]);
         }
 
         printf("%ld\n", mesh.vertices.size());

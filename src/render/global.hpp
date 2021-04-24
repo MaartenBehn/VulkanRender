@@ -146,7 +146,7 @@ namespace game
     // Mesh
     struct Vertex
     {
-        glm::vec3 pos;
+        glm::vec2 pos;
         glm::vec3 color;
     };
 
@@ -183,22 +183,16 @@ namespace game
 
     // Camera
     Transform cameraTransform;
-    const float cameraSpeed = 1.0f;
-    const float mouseSpeed = 3.0f;
+    const float cameraSpeed = 10.0f;
+    const float zoomSpeed = 5.0f;
+
+    float cameraBounds = 10.0f;
 
     // Particles
-    struct Particle
-    {
-        glm::vec3 pos;
-        int id;
-    };
-    
-    const int particleAmmount = 100;
-    std::vector<Particle> particles;
-    const float maxParticleDistance = 10.0f;
-    const int minNearParticles = 5;
+    const int particleAmmount = 10000;
+    const float maxParticleDistance = 3.0f;
 
-    const int bounds = 20;
+    const int bounds = 200;
 
     // Depth
     VkImage depthImage;

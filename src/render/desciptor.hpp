@@ -103,7 +103,12 @@ namespace game
 
         UniformBufferObject ubo{};
         ubo.view = cameraTransform.getMat();
-        ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 1000.0f);
+        ubo.proj = glm::ortho(
+            -(cameraBounds / 2), 
+            cameraBounds / 2, 
+            -(cameraBounds / 2) * ((float)swapChainExtent.height / (float)swapChainExtent.width), 
+            cameraBounds / 2 * ((float)swapChainExtent.height / (float)swapChainExtent.width), 
+            0.1f, 1000.0f);
         ubo.proj[1][1] *= -1;
 
         void *data;

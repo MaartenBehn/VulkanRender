@@ -31,11 +31,11 @@ namespace game
 
         if (window->keyDown(GLFW_KEY_W))
         {
-            cameraTransform.moveRelative(glm::vec3(0,0,1) * deltaTime * cameraSpeed);
+            cameraTransform.moveRelative(glm::vec3(0,-1,0) * deltaTime * cameraSpeed);
         }
         else if (window->keyDown(GLFW_KEY_S))
         {
-            cameraTransform.moveRelative(glm::vec3(0,0,-1) * deltaTime * cameraSpeed);
+            cameraTransform.moveRelative(glm::vec3(0,1,0) * deltaTime * cameraSpeed);
         }
 
         if (window->keyDown(GLFW_KEY_A))
@@ -47,9 +47,20 @@ namespace game
             cameraTransform.moveRelative(glm::vec3(-1,0,0) * deltaTime * cameraSpeed);
         }
 
+        if (window->keyDown(GLFW_KEY_Q))
+        {
+            cameraBounds += zoomSpeed * deltaTime;
+        }
+        else if (window->keyDown(GLFW_KEY_E))
+        {
+            cameraBounds -= zoomSpeed * deltaTime;
+        }
+
+/*
         if (window->buttonDown(GLFW_MOUSE_BUTTON_1)){
             glm::vec2 delta = window->mouseDelta;
             cameraTransform.rotate(glm::vec3(delta.y * deltaTime * mouseSpeed, delta.x * deltaTime * mouseSpeed, 0));
         }
+        */
     }
 } // namespace game
