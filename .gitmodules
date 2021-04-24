@@ -4,3 +4,6 @@
 [submodule "vendor/delaunator-cpp"]
 	path = vendor/delaunator-cpp
 	url = https://github.com/delfrrr/delaunator-cpp
+[submodule "vendor/Perlin_Noise"]
+	path = vendor/Perlin_Noise
+	url = https://github.com/sol-prog/Perlin_Noise

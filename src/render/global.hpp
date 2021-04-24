@@ -158,10 +158,12 @@ namespace game
 
     Mesh mesh;
 
+    VkDeviceSize vertexBufferSize;
     VkDeviceMemory vertexBufferMemory;
     VkBuffer vertexBuffer;
     void *vertexBufferdata;
 
+    VkDeviceSize indexBufferSize;
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
     void *indexBufferdata;
@@ -186,13 +188,24 @@ namespace game
     const float cameraSpeed = 10.0f;
     const float zoomSpeed = 5.0f;
 
-    float cameraBounds = 10.0f;
+    float cameraBounds = 100.0f;
 
     // Particles
-    const int particleAmmount = 10000;
-    const float maxParticleDistance = 3.0f;
+    struct Particle
+    {
+        glm::vec2 pos;
+        glm::vec2 velocity;
+    };
+    std::vector<Particle> particles;
 
-    const int bounds = 200;
+    const int maxTriangles = 10000;
+
+    const int particleAmmount = 100;
+    const float maxParticleDistance = 1000.0f;
+
+    const int bounds = 20;
+
+    const float g = 0.0001f;
 
     // Depth
     VkImage depthImage;

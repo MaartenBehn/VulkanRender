@@ -1,5 +1,5 @@
 
-SRC_DIR := ./src
+SRC_DIR := ./src ./vendor
 SRC_FILES := $(shell find $(SRC_DIR) -type f -name \*.cpp)
 
 INC_DIRS := $(shell find $(SRC_DIR) -type d)
