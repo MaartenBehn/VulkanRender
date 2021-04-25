@@ -21,10 +21,7 @@ namespace game
         imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
         imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create image!");
-        }
+        VK_CHECK_RESULT(vkCreateImage(device, &imageInfo, nullptr, &image));
 
         VkMemoryRequirements memRequirements;
         vkGetImageMemoryRequirements(device, image, &memRequirements);
@@ -34,11 +31,8 @@ namespace game
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-        if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to allocate image memory!");
-        }
-
+        VK_CHECK_RESULT(vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory)); 
+        
         vkBindImageMemory(device, image, imageMemory, 0);
     }
 

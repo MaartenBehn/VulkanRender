@@ -171,6 +171,8 @@ namespace game
     // Comand
     VkCommandPool graphicsCommandPool;
     std::vector<VkCommandBuffer> graphicsCommandBuffers;
+    VkCommandBuffer beginSingleTimeCommands();
+    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
     void createCommandBuffers();
 
@@ -187,25 +189,7 @@ namespace game
     Transform cameraTransform;
     const float cameraSpeed = 10.0f;
     const float zoomSpeed = 5.0f;
-
-    float cameraBounds = 100.0f;
-
-    // Particles
-    struct Particle
-    {
-        glm::vec2 pos;
-        glm::vec2 velocity;
-    };
-    std::vector<Particle> particles;
-
-    const int maxTriangles = 10000;
-
-    const int particleAmmount = 100;
-    const float maxParticleDistance = 1000.0f;
-
-    const int bounds = 20;
-
-    const float g = 0.0001f;
+    float cameraBounds = 2.0f;
 
     // Depth
     VkImage depthImage;
@@ -216,6 +200,7 @@ namespace game
     // Image
     void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
-    VkFormat findDepthFormat();
+
+    //
 
 } // namespace game
