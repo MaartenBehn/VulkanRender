@@ -117,6 +117,10 @@ namespace game
     VkDescriptorSetLayout graphicsDescriptorSetLayout;
     std::vector<VkDescriptorSet> graphicsDescriptorSets;
 
+    VkDescriptorPool computeDescriptorPool;
+    VkDescriptorSet cpmouteDescriptorSet;
+    VkDescriptorSetLayout computeDescriptorSetLayout;
+
     void createDescriptorPool();
     void createDescriptorSetLayout();
     void createDescriptorSets();
@@ -141,7 +145,13 @@ namespace game
     VkPipeline graphicsPipeline;
     VkPipelineLayout graphicsPipelineLayout;
 
+    // Compute Pipeline
+    VkPipeline computePipeline;
+    VkPipelineLayout computePipelineLayout;
+    VkShaderModule computeShaderModule;
+
     void createGraphicsPipeline();
+    static std::vector<char> readFile(const std::string &filename);
 
     // Mesh
     struct Vertex
@@ -171,6 +181,10 @@ namespace game
     // Comand
     VkCommandPool graphicsCommandPool;
     std::vector<VkCommandBuffer> graphicsCommandBuffers;
+    
+    VkCommandPool computeCommandPool;
+    VkCommandBuffer computeCommandBuffer;
+
     VkCommandBuffer beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
@@ -196,11 +210,20 @@ namespace game
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
     void createDepthResources();
+    VkFormat findDepthFormat();
 
     // Image
     void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
-    //
+    // Compute Buffer
+    struct Pixel {
+        float r, g, b, a;
+    };
+
+    VkBuffer computeBuffer;
+    VkDeviceMemory computeBufferMemory;
+        
+    uint32_t computeBufferSize; // size of `buffer` in bytes.
 
 } // namespace game

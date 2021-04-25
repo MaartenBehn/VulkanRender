@@ -17,6 +17,7 @@
 #include "camera.hpp"
 #include "depth.hpp"
 #include "image.hpp"
+#include "compute.hpp"
 
 namespace game
 {
@@ -172,6 +173,29 @@ namespace game
     {
         vkDeviceWaitIdle(device);
         cleanup();
+    }
+
+    void Render::computeRun()
+    {
+        // Buffer size of the storage buffer that will contain the rendered mandelbrot set.
+        computeBufferSize = sizeof(Pixel) * WIDTH * HEIGHT;
+
+        // Initialize vulkan:
+        computeCreateBuffer();
+        createComputeDescriptorSetLayout();
+        createDescriptorSet();
+        createComputePipeline();
+        createCommandBuffer();
+
+        // Finally, run the recorded command buffer.
+        runCommandBuffer();
+
+        // The former command rendered a mandelbrot set to a buffer.
+        // Save that buffer as a png on disk.
+        computeSaveRenderedImage();
+
+        // Clean up all vulkan resources.
+        computeCleanup();
     }
 
 } // namespace game

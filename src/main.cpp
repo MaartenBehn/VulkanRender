@@ -68,6 +68,8 @@ int main() {
 
         run();
 
+        render->computeRun();
+
         render->~Render();
         window->~Window();
     } catch (const std::exception& e) {

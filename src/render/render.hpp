@@ -12,5 +12,6 @@ namespace game
         ~Render();
         void drawFrame(float delta);
         void waitForDeviceDone();
+        void computeRun();
     };
 } // namespace game
