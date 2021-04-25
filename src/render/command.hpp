@@ -4,20 +4,37 @@
 
 namespace game
 {
-    void createCommandPool()
+    void createGraphicsCommandPool()
     {
         VkCommandPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
         poolInfo.flags = 0; // Optional
 
-        if (vkCreateCommandPool(device, &poolInfo, nullptr, &graphicsCommandPool) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create command pool!");
-        }
+        VK_CHECK_RESULT(vkCreateCommandPool(device, &poolInfo, nullptr, &graphicsCommandPool));
     }
 
-    void createCommandBuffers()
+    void createComputeCommandPool()
+    {
+        VkCommandPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.queueFamilyIndex = queueFamilyIndices.computeFamily;
+        poolInfo.flags = 0; // Optional
+
+        VK_CHECK_RESULT(vkCreateCommandPool(device, &poolInfo, nullptr, &computeCommandPool));
+    }
+
+    void createTransferCommandPool()
+    {
+        VkCommandPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.queueFamilyIndex = queueFamilyIndices.transferFamily;
+        poolInfo.flags = 0; // Optional
+
+        VK_CHECK_RESULT(vkCreateCommandPool(device, &poolInfo, nullptr, &transferCommandPool));
+    }
+
+    void createGraphicsCommandBuffers()
     {
         graphicsCommandBuffers.resize(swapChainFramebuffers.size());
 
@@ -27,10 +44,7 @@ namespace game
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount = (uint32_t)graphicsCommandBuffers.size();
 
-        if (vkAllocateCommandBuffers(device, &allocInfo, graphicsCommandBuffers.data()) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to allocate command buffers!");
-        }
+        VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &allocInfo, graphicsCommandBuffers.data()));
 
         for (size_t i = 0; i < graphicsCommandBuffers.size(); i++)
         {
@@ -39,10 +53,7 @@ namespace game
             beginInfo.flags = 0;                  // Optional
             beginInfo.pInheritanceInfo = nullptr; // Optional
 
-            if (vkBeginCommandBuffer(graphicsCommandBuffers[i], &beginInfo) != VK_SUCCESS)
-            {
-                throw std::runtime_error("failed to begin recording command buffer!");
-            }
+             VK_CHECK_RESULT(vkBeginCommandBuffer(graphicsCommandBuffers[i], &beginInfo));
 
             VkRenderPassBeginInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -75,11 +86,29 @@ namespace game
 
             vkCmdEndRenderPass(graphicsCommandBuffers[i]);
 
-            if (vkEndCommandBuffer(graphicsCommandBuffers[i]) != VK_SUCCESS)
-            {
-                throw std::runtime_error("failed to record command buffer!");
-            }
+            VK_CHECK_RESULT(vkEndCommandBuffer(graphicsCommandBuffers[i]));
         }
+    }
+
+    void createComputeCommandBuffers()
+    {
+        VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
+        commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        commandBufferAllocateInfo.commandPool = computeCommandPool; 
+        commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        commandBufferAllocateInfo.commandBufferCount = 1;                                                     
+        VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &computeCommandBuffer)); 
+
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;           
+        VK_CHECK_RESULT(vkBeginCommandBuffer(computeCommandBuffer, &beginInfo));
+
+        vkCmdBindPipeline(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline);
+        vkCmdBindDescriptorSets(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 1, &computeDescriptorSet, 0, NULL);
+        vkCmdDispatch(computeCommandBuffer, (uint32_t)ceil(WIDTH / float(WORKGROUP_SIZE)), (uint32_t)ceil(HEIGHT / float(WORKGROUP_SIZE)), 1);
+
+        VK_CHECK_RESULT(vkEndCommandBuffer(computeCommandBuffer));
     }
 
     VkCommandBuffer beginSingleTimeCommands()

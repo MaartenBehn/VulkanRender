@@ -36,19 +36,19 @@
 #define BOLDWHITE "\033[1m\033[37m"   /* Bold White */
 
 #ifdef DEBUG
-    const bool enableValidationLayers = true;
+const bool enableValidationLayers = true;
 #else
-    const bool enableValidationLayers = false;
+const bool enableValidationLayers = false;
 #endif
 
-#define VK_CHECK_RESULT(f)                                                                      \
-    {                                                                                           \
-    VkResult res = (f);                                                                         \
-        if (res != VK_SUCCESS)                                                                  \
-        {                                                                                       \
-            printf("Fatal : VkResult is %d in %s at line %d\n", res, __FILE__, __LINE__);       \
-            assert(res == VK_SUCCESS);                                                          \
-        }                                                                                       \
+#define VK_CHECK_RESULT(f)                                                                \
+    {                                                                                     \
+        VkResult res = (f);                                                               \
+        if (res != VK_SUCCESS)                                                            \
+        {                                                                                 \
+            printf("Fatal : VkResult is %d in %s at line %d\n", res, __FILE__, __LINE__); \
+            assert(res == VK_SUCCESS);                                                    \
+        }                                                                                 \
     }
 
 namespace game
@@ -118,12 +118,12 @@ namespace game
     std::vector<VkDescriptorSet> graphicsDescriptorSets;
 
     VkDescriptorPool computeDescriptorPool;
-    VkDescriptorSet cpmouteDescriptorSet;
+    VkDescriptorSet computeDescriptorSet;
     VkDescriptorSetLayout computeDescriptorSetLayout;
 
-    void createDescriptorPool();
-    void createDescriptorSetLayout();
-    void createDescriptorSets();
+    void createGraphicsDescriptorPool();
+    void createGraphicsDescriptorSetLayout();
+    void createGraphicsDescriptorSets();
 
     struct UniformBufferObject
     {
@@ -148,7 +148,6 @@ namespace game
     // Compute Pipeline
     VkPipeline computePipeline;
     VkPipelineLayout computePipelineLayout;
-    VkShaderModule computeShaderModule;
 
     void createGraphicsPipeline();
     static std::vector<char> readFile(const std::string &filename);
@@ -181,14 +180,16 @@ namespace game
     // Comand
     VkCommandPool graphicsCommandPool;
     std::vector<VkCommandBuffer> graphicsCommandBuffers;
-    
+
     VkCommandPool computeCommandPool;
     VkCommandBuffer computeCommandBuffer;
+
+    VkCommandPool transferCommandPool;
 
     VkCommandBuffer beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
-    void createCommandBuffers();
+    void createGraphicsCommandBuffers();
 
     // Sync
     const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -198,6 +199,8 @@ namespace game
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
     std::vector<VkFence> imagesInFlight;
+
+    VkFence computeFence;
 
     // Camera
     Transform cameraTransform;
@@ -213,17 +216,25 @@ namespace game
     VkFormat findDepthFormat();
 
     // Image
+    VkImage textureImage;
+    VkDeviceMemory textureImageMemory;
+
     void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
     // Compute Buffer
-    struct Pixel {
+
+    const int WIDTH = 3200;        // Size of rendered mandelbrot set.
+    const int HEIGHT = 2400;       // Size of renderered mandelbrot set.
+    const int WORKGROUP_SIZE = 32; // Workgroup size in compute shader.
+    struct Pixel
+    {
         float r, g, b, a;
     };
 
     VkBuffer computeBuffer;
     VkDeviceMemory computeBufferMemory;
-        
+
     uint32_t computeBufferSize; // size of `buffer` in bytes.
 
 } // namespace game

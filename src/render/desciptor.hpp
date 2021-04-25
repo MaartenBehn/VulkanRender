@@ -4,7 +4,7 @@
 
 namespace game
 {
-    void createDescriptorPool()
+    void createGraphicsDescriptorPool()
     {
         VkDescriptorPoolSize poolSize{};
         poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -16,15 +16,28 @@ namespace game
         poolInfo.pPoolSizes = &poolSize;
         poolInfo.maxSets = static_cast<uint32_t>(swapChainImages.size());
 
-        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &graphicsDescriptorPool) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create descriptor pool!");
-        }
+        VK_CHECK_RESULT(vkCreateDescriptorPool(device, &poolInfo, nullptr,
+                                               &graphicsDescriptorPool));
     }
 
-    void createDescriptorSets()
+    void createComputeDescriptorPool()
     {
+        VkDescriptorPoolSize poolSize{};
+        poolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        poolSize.descriptorCount = 1;
 
+        VkDescriptorPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.poolSizeCount = 1;
+        poolInfo.pPoolSizes = &poolSize;
+        poolInfo.maxSets = 1;
+
+        VK_CHECK_RESULT(vkCreateDescriptorPool(device, &poolInfo, nullptr,
+                                               &computeDescriptorPool));
+    }
+
+    void createGraphicsDescriptorSets()
+    {
         std::vector<VkDescriptorSetLayout> layouts(swapChainImages.size(), graphicsDescriptorSetLayout);
 
         VkDescriptorSetAllocateInfo allocInfo{};
@@ -34,10 +47,7 @@ namespace game
         allocInfo.pSetLayouts = layouts.data();
 
         graphicsDescriptorSets.resize(swapChainImages.size());
-        if (vkAllocateDescriptorSets(device, &allocInfo, graphicsDescriptorSets.data()) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to allocate descriptor sets!");
-        }
+        VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, graphicsDescriptorSets.data()));
 
         for (size_t i = 0; i < swapChainImages.size(); i++)
         {
@@ -61,24 +71,67 @@ namespace game
         }
     }
 
-    void createDescriptorSetLayout()
+    void createComputeDescriptorSets()
     {
-        VkDescriptorSetLayoutBinding uboLayoutBinding{};
-        uboLayoutBinding.binding = 0;
-        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboLayoutBinding.descriptorCount = 1;
-        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
+        VkDescriptorSetAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = computeDescriptorPool; // pool to allocate from.
+        allocInfo.descriptorSetCount = 1;                 // allocate a single descriptor set.
+        allocInfo.pSetLayouts = &computeDescriptorSetLayout;
+
+        VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &computeDescriptorSet));
+
+        // Specify the buffer to bind to the descriptor.
+        VkDescriptorBufferInfo descriptorBufferInfo{};
+        descriptorBufferInfo.buffer = computeBuffer;
+        descriptorBufferInfo.offset = 0;
+        descriptorBufferInfo.range = computeBufferSize;
+
+        VkWriteDescriptorSet writeDescriptorSet{};
+        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeDescriptorSet.dstSet = computeDescriptorSet;                      // write to this descriptor set.
+        writeDescriptorSet.dstBinding = 0;                                     // write to the first, and only binding.
+        writeDescriptorSet.descriptorCount = 1;                                // update a single descriptor.
+        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // storage buffer.
+        writeDescriptorSet.pBufferInfo = &descriptorBufferInfo;
+
+        // perform the update of the descriptor set.
+        vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 0, NULL);
+    }
+
+    void createGraphicsDescriptorSetLayout()
+    {
+        VkDescriptorSetLayoutBinding layoutBinding{};
+        layoutBinding.binding = 0;
+        layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        layoutBinding.descriptorCount = 1;
+        layoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        layoutBinding.pImmutableSamplers = nullptr; // Optional
 
         VkDescriptorSetLayoutCreateInfo layoutInfo{};
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount = 1;
-        layoutInfo.pBindings = &uboLayoutBinding;
+        layoutInfo.pBindings = &layoutBinding;
 
-        if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &graphicsDescriptorSetLayout) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create descriptor set layout!");
-        }
+        VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr,
+                                                    &graphicsDescriptorSetLayout));
+    }
+
+    void createComputeDescriptorSetLayout()
+    {
+        VkDescriptorSetLayoutBinding layoutBinding{};
+        layoutBinding.binding = 0;
+        layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        layoutBinding.descriptorCount = 1;
+        layoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+        VkDescriptorSetLayoutCreateInfo layoutInfo{};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = 1;
+        layoutInfo.pBindings = &layoutBinding;
+
+        VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &layoutInfo, NULL,
+                                                    &computeDescriptorSetLayout));
     }
 
     void createUniformBuffers()
@@ -104,10 +157,10 @@ namespace game
         UniformBufferObject ubo{};
         ubo.view = cameraTransform.getMat();
         ubo.proj = glm::ortho(
-            -(cameraBounds / 2), 
-            cameraBounds / 2, 
-            -(cameraBounds / 2) * ((float)swapChainExtent.height / (float)swapChainExtent.width), 
-            cameraBounds / 2 * ((float)swapChainExtent.height / (float)swapChainExtent.width), 
+            -(cameraBounds / 2),
+            cameraBounds / 2,
+            -(cameraBounds / 2) * ((float)swapChainExtent.height / (float)swapChainExtent.width),
+            cameraBounds / 2 * ((float)swapChainExtent.height / (float)swapChainExtent.width),
             0.1f, 1000.0f);
         ubo.proj[1][1] *= -1;
 
@@ -116,5 +169,5 @@ namespace game
         memcpy(data, &ubo, sizeof(ubo));
         vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
     }
-    
+
 } // namespace game

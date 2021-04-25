@@ -41,23 +41,23 @@ namespace game
         createImageViews();
 
         createRenderPass();
-        createCommandPool();
+        createGraphicsCommandPool();
 
         createDepthResources();
         createFramebuffers();
 
         createUniformBuffers();
-        createDescriptorPool();
-        createDescriptorSetLayout();
-        createDescriptorSets();
+        createGraphicsDescriptorPool();
+        createGraphicsDescriptorSetLayout();
+        createGraphicsDescriptorSets();
 
         createGraphicsPipeline();
 
         createMesh();
 
-        createCommandBuffers();
+        createGraphicsCommandBuffers();
 
-        createSyncObjects();
+        createGraphicsSyncObjects();
     }
 
     void Render::drawFrame(float delta)
@@ -177,25 +177,22 @@ namespace game
 
     void Render::computeRun()
     {
-        // Buffer size of the storage buffer that will contain the rendered mandelbrot set.
         computeBufferSize = sizeof(Pixel) * WIDTH * HEIGHT;
 
-        // Initialize vulkan:
-        computeCreateBuffer();
+        createComputeBuffer();
+        createComputeDescriptorPool();
         createComputeDescriptorSetLayout();
-        createDescriptorSet();
+        createComputeDescriptorSets();
         createComputePipeline();
-        createCommandBuffer();
+        createComputeCommandPool();
+        createComputeCommandBuffers();
+        createComputeSyncObjects();
 
-        // Finally, run the recorded command buffer.
-        runCommandBuffer();
+        runComputeCommandBuffer();
 
-        // The former command rendered a mandelbrot set to a buffer.
-        // Save that buffer as a png on disk.
         computeSaveRenderedImage();
 
-        // Clean up all vulkan resources.
-        computeCleanup();
+        cleanupCompute();
     }
 
 } // namespace game

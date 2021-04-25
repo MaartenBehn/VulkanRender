@@ -216,12 +216,12 @@ namespace game
         createFramebuffers();
 
         createUniformBuffers();
-        createDescriptorPool();
-        createDescriptorSets();
+        createGraphicsDescriptorPool();
+        createGraphicsDescriptorSets();
 
         createGraphicsPipeline();
 
-        createCommandBuffers();
+        createGraphicsCommandBuffers();
     }
 
 } // namespace game

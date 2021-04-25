@@ -37,7 +37,7 @@ namespace game
         return shaderModule;
     }
 
-    static VkVertexInputBindingDescription getBindingDescription()
+    static VkVertexInputBindingDescription getGraphicsBindingDescription()
     {
         VkVertexInputBindingDescription bindingDescription{};
         bindingDescription.binding = 0;
@@ -47,7 +47,7 @@ namespace game
         return bindingDescription;
     }
 
-    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions()
+    static std::array<VkVertexInputAttributeDescription, 2> getGraphicsAttributeDescriptions()
     {
         std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
 
@@ -91,8 +91,8 @@ namespace game
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-        auto bindingDescription = getBindingDescription();
-        auto attributeDescriptions = getAttributeDescriptions();
+        auto bindingDescription = getGraphicsBindingDescription();
+        auto attributeDescriptions = getGraphicsAttributeDescriptions();
 
         vertexInputInfo.vertexBindingDescriptionCount = 1;
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -226,6 +226,34 @@ namespace game
         // Deleting Shaders because no longer needed
         vkDestroyShaderModule(device, fragShaderModule, nullptr);
         vkDestroyShaderModule(device, vertShaderModule, nullptr);
+    }
+
+    void createComputePipeline()
+    {
+        auto code = readFile("shaders/comp.spv");
+
+        VkShaderModule compShaderModule = createShaderModule(code);
+
+        VkPipelineShaderStageCreateInfo shaderStageCreateInfo = {};
+        shaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageCreateInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        shaderStageCreateInfo.module = compShaderModule;
+        shaderStageCreateInfo.pName = "main";
+
+        VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
+        pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutCreateInfo.setLayoutCount = 1;
+        pipelineLayoutCreateInfo.pSetLayouts = &computeDescriptorSetLayout;
+        VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, NULL, &computePipelineLayout));
+
+        VkComputePipelineCreateInfo pipelineCreateInfo = {};
+        pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineCreateInfo.stage = shaderStageCreateInfo;
+        pipelineCreateInfo.layout = computePipelineLayout;
+
+        VK_CHECK_RESULT(vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineCreateInfo, NULL, &computePipeline));
+
+        vkDestroyShaderModule(device, compShaderModule, nullptr);
     }
 
 } // namespace game

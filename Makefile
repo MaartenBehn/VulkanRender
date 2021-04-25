@@ -20,3 +20,4 @@ run: clean VulkanTest
 
 clean:
 	rm -f VulkanTest
+	rm -f mandelbrot.png

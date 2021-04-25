@@ -20,7 +20,8 @@ namespace game
 
         throw std::runtime_error("failed to find suitable memory type!");
     }
-    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, 
+        VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)
     {
         VkBufferCreateInfo bufferInfo{};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -40,7 +41,7 @@ namespace game
 
         VK_CHECK_RESULT(vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory));
 
-        vkBindBufferMemory(device, buffer, bufferMemory, 0);
+        VK_CHECK_RESULT(vkBindBufferMemory(device, buffer, bufferMemory, 0));
     }
 
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)

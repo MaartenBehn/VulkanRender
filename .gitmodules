@@ -7,3 +7,6 @@
 [submodule "vendor/Perlin_Noise"]
 	path = vendor/Perlin_Noise
 	url = https://github.com/sol-prog/Perlin_Noise
+[submodule "vendor/stb"]
+	path = vendor/stb
+	url = https://github.com/nothings/stb

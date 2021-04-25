@@ -4,7 +4,7 @@
 
 namespace game
 {
-    void createSyncObjects()
+    void createGraphicsSyncObjects()
     {
         imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -27,5 +27,13 @@ namespace game
                 throw std::runtime_error("failed to create synchronization objects for a frame!");
             }
         }
+    }
+
+    void createComputeSyncObjects()
+    {
+        VkFenceCreateInfo fenceInfo{};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags = 0;
+        VK_CHECK_RESULT(vkCreateFence(device, &fenceInfo, NULL, &computeFence));
     }
 } // namespace game
