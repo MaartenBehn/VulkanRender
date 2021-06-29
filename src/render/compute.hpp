@@ -38,7 +38,6 @@ namespace game
             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, computeBuffer, computeBufferMemory);
     }
 
-
     void runComputeCommandBuffer()
     {
         VkSubmitInfo submitInfo = {};

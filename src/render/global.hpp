@@ -157,6 +157,7 @@ namespace game
     {
         glm::vec2 pos;
         glm::vec3 color;
+        glm::vec2 texCoord;
     };
 
     struct Mesh
@@ -218,12 +219,13 @@ namespace game
     // Image
     VkImage textureImage;
     VkDeviceMemory textureImageMemory;
+    VkImageView textureImageView;
+    VkSampler textureSampler;
 
     void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
     // Compute Buffer
-
     const int WIDTH = 3200;        // Size of rendered mandelbrot set.
     const int HEIGHT = 2400;       // Size of renderered mandelbrot set.
     const int WORKGROUP_SIZE = 32; // Workgroup size in compute shader.

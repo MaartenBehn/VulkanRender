@@ -27,7 +27,7 @@ namespace game
 
         cameraTransform = Transform();
         cameraTransform.setRot(glm::vec3(0, 0, 0));
-        cameraTransform.setPos(glm::vec3(0, 0 , -10.0f));
+        cameraTransform.setPos(glm::vec3(0, 0, -10.0f));
 
         createInstance();
         setupDebugMessenger();
@@ -46,6 +46,10 @@ namespace game
         createDepthResources();
         createFramebuffers();
 
+        createTextureImage();
+        createTextureImageView();
+        createTextureSampler();
+    
         createUniformBuffers();
         createGraphicsDescriptorPool();
         createGraphicsDescriptorSetLayout();
